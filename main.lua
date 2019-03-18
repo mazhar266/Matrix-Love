@@ -67,8 +67,8 @@ function love.draw()
             "fill",
             screen_width - 105,
             screen_height - 45,
-            500,
-            500
+            500, -- just keep it larger than the message
+            500  -- just keep it larger than the message too
         )
         love.graphics.setColor(0, 255, 0, 1)
         love.graphics.print(
