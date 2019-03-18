@@ -6,8 +6,8 @@ end
 
 -- called everytime it needs to update frame
 function love.update(dt)
-    x = x + incr
-    y = y + incr
+    x = x + (incr * 2)
+    y = y + (incr * 2)
 
     if x < 1 then
         incr = 1
@@ -21,4 +21,6 @@ end
 -- draw wherever I want here
 function love.draw()
     love.graphics.print('Hello World!', x, y)
+    -- draw the FPS
+    love.graphics.print("Current FPS: "..tostring(love.timer.getFPS()), 700, 580)
 end
