@@ -20,6 +20,7 @@ end
 
 -- draw wherever I want here
 function love.draw()
+    love.graphics.setColor(0, 255, 0, 1)
     love.graphics.print('Hello World!', x, y)
     -- draw the FPS
     love.graphics.print("Current FPS: "..tostring(love.timer.getFPS()), 700, 580)
