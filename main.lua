@@ -1,4 +1,4 @@
-env = require("env").get()
+anim = require("anim")
 
 -- debug mode shows the FPS
 DEBUG = true
@@ -22,7 +22,7 @@ function love.load()
         screens[i] = {}
         for j = 0, screen_height / char_height, 1
         do
-            screens[i][j] = env.chars[math.random(#env.chars)]
+            screens[i][j] = anim()
         end
         
     end
@@ -38,10 +38,9 @@ function love.update(dt)
     -- if math.floor(old_running_time) < math.floor(running_time) then
         for i = 0, screen_width / char_width, 1
         do
-            screens[i] = {}
             for j = 0, screen_height / char_height, 1
             do
-                screens[i][j] = env.chars[math.random(#env.chars)]
+                screens[i][j].get(running_time, dt)
             end
             
         end
@@ -50,15 +49,15 @@ end
 
 -- draw wherever I want here
 function love.draw()
-    -- set the green color
-    love.graphics.setColor(0, 255, 0, 1)
-
     -- render the screens list
     for i = 0, #screens, 1
     do
         for j = 0, #screens[i], 1
         do
-            love.graphics.print(screens[i][j], i * char_width, j * char_height)
+            -- set the decided color
+            -- print(screens[i][j].get_color())
+            love.graphics.setColor(screens[i][j].get_color())
+            love.graphics.print(screens[i][j].get_digit(), i * char_width, j * char_height)
         end
     end
     
