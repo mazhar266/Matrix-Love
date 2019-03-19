@@ -1,3 +1,5 @@
+env = require("env").get()
+
 -- debug mode shows the FPS
 DEBUG = true
 
@@ -20,7 +22,7 @@ function love.load()
         screens[i] = {}
         for j = 0, screen_height / char_height, 1
         do
-            screens[i][j] = math.random(9)
+            screens[i][j] = env.chars[math.random(#env.chars)]
         end
         
     end
@@ -39,7 +41,7 @@ function love.update(dt)
             screens[i] = {}
             for j = 0, screen_height / char_height, 1
             do
-                screens[i][j] = math.random(9)
+                screens[i][j] = env.chars[math.random(#env.chars)]
             end
             
         end
