@@ -17,10 +17,10 @@ function love.load()
     char_height = 12
 
     -- now make random chars
-    for i = 0, screen_width / char_width, 1
+    for i = 1, screen_width / char_width, 1
     do
         screens[i] = {}
-        for j = 0, screen_height / char_height, 1
+        for j = 1, screen_height / char_height, 1
         do
             screens[i][j] = anim()
         end
@@ -36,9 +36,9 @@ function love.update(dt)
 
     -- now make random chars
     -- if math.floor(old_running_time) < math.floor(running_time) then
-        for i = 0, screen_width / char_width, 1
+        for i = 1, screen_width / char_width, 1
         do
-            for j = 0, screen_height / char_height, 1
+            for j = 1, screen_height / char_height, 1
             do
                 screens[i][j].get(running_time, dt)
             end
@@ -50,9 +50,9 @@ end
 -- draw wherever I want here
 function love.draw()
     -- render the screens list
-    for i = 0, #screens, 1
+    for i = 1, #screens, 1
     do
-        for j = 0, #screens[i], 1
+        for j = 1, #screens[i], 1
         do
             -- set the decided color
             -- print(screens[i][j].get_color())

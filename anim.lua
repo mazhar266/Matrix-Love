@@ -1,7 +1,4 @@
 env = require("env").get()
-print_table = require("print")
-
-print_table(env['secondary_color'][0])
 
 local function anim()
     local self = {
@@ -35,25 +32,25 @@ local function anim()
         end
 
         -- alter the secondary color with primary
-        if self.x[1] == 255 then
-            self.x[1] = env['primary_color'][0]
+        if self.x[2] == 255 then
             self.x[2] = env['primary_color'][1]
             self.x[3] = env['primary_color'][2]
             self.x[4] = env['primary_color'][3]
+            self.x[5] = env['primary_color'][4]
             return x
         end
 
         -- just decrease the opacity and return it
-        self.x[4] = self.x[4] - 0.01
+        self.x[5] = self.x[5] - 0.01
         return self.x
     end
 
     function self.get_color()
-        return self.x[1], self.x[2], self.x[3], self.x[4]
+        return self.x[2], self.x[3], self.x[4], self.x[5]
     end
 
     function self.get_digit()
-        return self.x[0]
+        return self.x[1]
     end
 
     -- return the instance
