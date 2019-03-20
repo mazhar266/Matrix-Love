@@ -19,15 +19,34 @@ function love.load()
     char_width = 10
     char_height = 12
 
+    -- let previous random number be zero
+    previous_rand = 0
+
     -- now make random chars
     for i = 0, screen_width / char_width, 1
     do
+        -- define the empty table / list
         screens[i] = {}
+
+        -- make the random value constant for a column
+        rand = previous_rand
+        -- avoid the previous rand value
+        while rand == previous_rand
+        do
+            rand = math.random(math.floor(screen_height / char_height))
+        end
+        -- save the value as previous rand value
+        previous_rand = rand
+
         for j = 0, screen_height / char_height, 1
         do
             -- add a new anim obj
             screens[i][j] = anim()
-            screens[i][j].init(math.random(20) * env['delay'], env['delay'])
+            -- initialize according to the desired value
+            screens[i][j].init(
+                ((screen_height / char_height) - (j + rand)) * env['delay'],
+                env['delay']
+            )
         end
         
     end
