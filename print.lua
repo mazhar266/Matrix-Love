@@ -1,3 +1,4 @@
+-- print a table just like print_r in php
 local function print_table(node)
     -- to make output beautiful
     local function tab(amt)

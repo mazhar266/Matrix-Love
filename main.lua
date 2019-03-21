@@ -2,7 +2,7 @@ anim = require("anim")
 env = require("env").get()
 
 -- debug mode shows the FPS
-DEBUG = true
+DEBUG = env['DEBUG']
 
 -- called once the game opened
 function love.load()
@@ -87,7 +87,7 @@ function love.draw()
         end
     end
     
-    -- draw the FPS
+    -- draw the FPS and other debug info
     if DEBUG then
         love.graphics.setColor(0, 0, 0, 1)
         love.graphics.rectangle(

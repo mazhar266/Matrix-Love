@@ -1,8 +1,10 @@
 env = require("env").get()
 
+-- animation class for a single digit
 local function anim()
     local self = {
-        -- public fields go in the instance table
+        -- public fields go in the instance table for metaclass
+        -- x is the digit with color and alpha
         x = {
             env.chars[math.random(#env.chars)],
             env['primary_color'][1],
@@ -10,6 +12,7 @@ local function anim()
             env['primary_color'][3],
             env['primary_color'][4]
         },
+        -- times is the time it is rendered to the screen
         times = 0
     }
 
@@ -57,14 +60,17 @@ local function anim()
         return self.x
     end
 
+    -- get the color
     function self.get_color()
         return self.x[2], self.x[3], self.x[4], self.x[5]
     end
 
+    -- get the digit
     function self.get_digit()
         return self.x[1]
     end
 
+    -- initialize to a specific point
     function self.init(d)
         if self.times == 0 then
             for i = 0, math.floor(d / env['delay']), 1
