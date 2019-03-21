@@ -44,7 +44,7 @@ function love.load()
             screens[i][j] = anim()
             -- initialize according to the desired value
             screens[i][j].init(
-                ((screen_height / char_height) - (j + rand)) * env['delay'],
+                (2*(screen_height / char_height) - (j + rand)) * env['delay'],
                 env['delay']
             )
         end

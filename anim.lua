@@ -25,11 +25,6 @@ local function anim()
 
         -- if the opacity hits 0, reset the digit
         if self.x[5] <= 0 or self.x[5] == nil then
-            self.x = {}
-        end
-
-        -- see if the char is set, else set it
-        if self.x[5] == nil then
             -- take a random char
             self.x = {
                 env.chars[math.random(#env.chars)],
@@ -40,7 +35,7 @@ local function anim()
             }
             return self.x
         end
-
+        
         -- alter the secondary color with primary
         -- comparing numbers makes it speedy
         -- TODO keep the white digit longer like 0.2 ~ 0.5s
@@ -49,7 +44,7 @@ local function anim()
             self.x[2] = env['primary_color'][1]
             self.x[3] = env['primary_color'][2]
             self.x[4] = env['primary_color'][3]
-            self.x[5] = env['primary_color'][4]
+            self.x[5] = env['primary_color'][4] - dt
             return self.x
         end
 
