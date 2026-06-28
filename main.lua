@@ -1,120 +1,120 @@
-anim = require("anim")
+column = require("column")
 env = require("env").get()
 
--- debug mode shows the FPS
+-- debug mode shows the FPS and grid info
 DEBUG = env['DEBUG']
 
--- called once the game opened
-function love.load()
-    -- running time is 0s at the beginning
-    running_time = 0
-    -- keep the frames as 0
-    total_frames = 0
-    -- first make an empty screen of chars
-    screens = {}
-    -- inspect the viewport and init the constants
-    screen_width = love.graphics.getWidth()
+-- (re)build the grid for the current viewport: choose a font sized to the
+-- monitor, then derive the cell size and column count from that font.
+local function build()
+    -- viewport in the graphics coordinate system (drawing uses these same
+    -- units, so layout and rendering stay pixel-aligned at any DPI)
+    screen_width  = love.graphics.getWidth()
     screen_height = love.graphics.getHeight()
-    -- size of a digit
-    char_width = 10
-    char_height = 12
 
-    -- let previous random number be zero
-    previous_rand = 0
+    -- size the font so ~target_rows rows fill the height. because this is
+    -- relative to the actual screen height (in device pixels when highdpi is
+    -- on), the glyphs scale with the monitor's resolution and pixel density
+    -- instead of being a fixed, tiny 12px.
+    local font_size = math.max(
+        env['min_font_size'],
+        math.floor(screen_height / env['target_rows'])
+    )
+    font = love.graphics.newFont(font_size)
+    love.graphics.setFont(font)
 
-    -- now make random chars
-    for i = 0, screen_width / char_width, 1
-    do
-        -- define the empty table / list
-        screens[i] = {}
+    -- cell height comes straight from the font; cell width is the widest
+    -- glyph (× spacing) so the grid stays aligned with any font
+    char_height = font:getHeight()
+    char_width = 0
+    for _, c in ipairs(env['chars']) do
+        char_width = math.max(char_width, font:getWidth(c))
+    end
+    char_width = math.ceil(char_width * env['char_spacing'])
 
-        -- make the random value constant for a column
-        rand = previous_rand
-        -- avoid the previous rand value
-        while rand == previous_rand
-        do
-            rand = math.random(math.floor(screen_height / char_height))
-        end
-        -- save the value as previous rand value
-        previous_rand = rand
+    cols = math.ceil(screen_width / char_width)
+    rows = math.ceil(screen_height / char_height)
 
-        for j = 0, screen_height / char_height, 1
-        do
-            -- add a new anim obj
-            screens[i][j] = anim()
-            -- initialize according to the desired value
-            screens[i][j].init(
-                (2*(screen_height / char_height) - (j + rand)) * env['delay'],
-                env['delay']
-            )
-        end
-        
+    -- one independent falling stream per column
+    columns = {}
+    for i = 1, cols do
+        columns[i] = column(rows, env)
     end
 end
 
--- called everytime it needs to update frame
+-- called once when the game opens
+function love.load()
+    -- seed the RNG so every run looks different
+    love.math.setRandomSeed(os.time())
+    for _ = 1, 8 do love.math.random() end
+
+    love.graphics.setBackgroundColor(0, 0, 0)
+
+    -- running time is 0s at the beginning, no frames drawn yet
+    running_time = 0
+    total_frames = 0
+
+    build()
+end
+
+-- rebuild if the window/monitor size ever changes
+function love.resize()
+    build()
+end
+
+-- press 'q' to stop and exit the animation
+function love.keypressed(key)
+    if key == 'q' then
+        love.event.quit()
+    end
+end
+
+-- called every time it needs to update a frame
 function love.update(dt)
-    -- update the time the game is running
-    -- old_running_time = running_time
     running_time = running_time + dt
-    -- update the frame count
     total_frames = total_frames + 1
 
-    -- now make random chars
-    -- if math.floor(old_running_time) < math.floor(running_time) then
-        for i = 0, screen_width / char_width, 1
-        do
-            for j = 0, screen_height / char_height, 1
-            do
-                screens[i][j].get(running_time, dt)
-            end
-            
-        end
-    -- end
+    for i = 1, cols do
+        columns[i].update(dt)
+    end
 end
 
--- draw wherever I want here
-function love.draw()
-    -- render the screens list
-    for i = 0, #screens, 1
-    do
-        for j = 0, #screens[i], 1
-        do
-            -- set the decided color
-            love.graphics.setColor(screens[i][j].get_color())
-            -- now print the digit
-            love.graphics.print(screens[i][j].get_digit(), i * char_width, j * char_height)
-        end
+-- draw the debug overlay (bottom-right)
+local function draw_debug()
+    local lines = {
+        'FPS: ' .. love.timer.getFPS(),
+        string.format('Runtime: %.1fs', running_time),
+        'Frames: ' .. total_frames,
+        'Grid: ' .. cols .. ' x ' .. rows,
+        'Font: ' .. font:getHeight() .. 'px'
+    }
+
+    local pad = math.floor(char_height * 0.5)
+    local line_h = font:getHeight()
+    local box_w = 0
+    for _, l in ipairs(lines) do
+        box_w = math.max(box_w, font:getWidth(l))
     end
-    
-    -- draw the FPS and other debug info
+    box_w = box_w + pad * 2
+    local box_h = line_h * #lines + pad * 2
+    local x = screen_width - box_w - pad
+    local y = screen_height - box_h - pad
+
+    love.graphics.setColor(0, 0, 0, 0.7)
+    love.graphics.rectangle('fill', x, y, box_w, box_h)
+    love.graphics.setColor(0, 1, 0, 1)
+    for i, l in ipairs(lines) do
+        love.graphics.print(l, x + pad, y + pad + (i - 1) * line_h)
+    end
+end
+
+-- render the rain
+function love.draw()
+    for i = 1, cols do
+        columns[i].draw((i - 1) * char_width, char_width, char_height, font)
+    end
+
     if DEBUG then
-        love.graphics.setColor(0, 0, 0, 1)
-        love.graphics.rectangle(
-            "fill",
-            screen_width - 115,
-            screen_height - 65,
-            500, -- just keep it larger than the message
-            500  -- just keep it larger than the message too
-        )
-        love.graphics.setColor(0, 255, 0, 1)
-        -- print the framerate
-        love.graphics.print(
-            'Current FPS: ' .. tostring(love.timer.getFPS()),
-            screen_width - 110,
-            screen_height - 20
-        )
-        -- print the total time in second
-        love.graphics.print(
-            'Runtime: ' .. string.format("%0.1f", running_time) .. 's',
-            screen_width - 110,
-            screen_height - 40
-        )
-        -- print the total frames rendered
-        love.graphics.print(
-            'Frames: ' .. tostring(total_frames),
-            screen_width - 110,
-            screen_height - 60
-        )
+        draw_debug()
     end
 end

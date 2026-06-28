@@ -21,7 +21,7 @@ function love.conf(t)
     t.window.depth = nil                -- The number of bits per sample in the depth buffer
     t.window.stencil = nil              -- The number of bits per sample in the stencil buffer
     t.window.display = 1                -- Index of the monitor to show the window in (number)
-    t.window.highdpi = false            -- Enable high-dpi mode for the window on a Retina display (boolean)
+    t.window.highdpi = true             -- Enable high-dpi mode so the framebuffer (and thus the font) uses real device pixels on high pixel-density monitors (boolean)
     t.window.x = nil                    -- The x-coordinate of the window's position in the specified display (number)
     t.window.y = nil                    -- The y-coordinate of the window's position in the specified display (number)
  
@@ -32,7 +32,7 @@ function love.conf(t)
     t.modules.graphics = true           -- Enable the graphics module (boolean)
     t.modules.image = false             -- Enable the image module (boolean)
     t.modules.joystick = false          -- Enable the joystick module (boolean)
-    t.modules.keyboard = false          -- Enable the keyboard module (boolean)
+    t.modules.keyboard = true           -- Enable the keyboard module (boolean), needed so 'q' can quit the app
     t.modules.math = true               -- Enable the math module (boolean)
     t.modules.mouse = false             -- Enable the mouse module (boolean)
     t.modules.physics = false           -- Enable the physics module (boolean)
